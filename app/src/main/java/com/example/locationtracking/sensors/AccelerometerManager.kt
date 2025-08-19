@@ -44,9 +44,9 @@ class AccelerometerManager(context: Context) : SensorEventListener {
     }
 
     override fun onSensorChanged(event: android.hardware.SensorEvent) {
-//        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
-//            _values.value = Triple(event.values[0], event.values[1], event.values[2])
-//        }
+        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+            _values.value = Triple(event.values[0], event.values[1], event.values[2])
+        }
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}

@@ -14,6 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import android.util.Log
 
 
 class LocationForegroundService : Service() {
@@ -24,15 +25,18 @@ class LocationForegroundService : Service() {
     companion object {
         const val CHANNEL_ID = "location_channel"
         const val NOTIFICATION_ID = 1
+        private const val TAG = "LocationService"
     }
 
     override fun onCreate() {
         super.onCreate()
+        Log.d(TAG, "Service onCreate")
         locationUpdater = LocationUpdater(this)
         createNotificationChannel()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.d(TAG, "Service onStartCommand")
         val notification = buildNotification("Starting location service...")
         startForeground(NOTIFICATION_ID, notification)
 
@@ -51,15 +55,37 @@ class LocationForegroundService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+//    private fun createNotificationChannel() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            val channel = NotificationChannel(
+//                CHANNEL_ID,
+//                "Location Service",
+//                NotificationManager.IMPORTANCE_DEFAULT
+//            )
+//            val manager = getSystemService(NotificationManager::class.java)
+//            manager.createNotificationChannel(channel)
+//        }
+//    }
+
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 "Location Service",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
+                NotificationManager.IMPORTANCE_LOW // LOW = no sound, no vibration, no popup
+            ).apply {
+                description = "Shows current GPS coordinates"
+                setShowBadge(false)        // No badge on app icon
+                enableLights(false)        // No LED light
+                enableVibration(false)     // No vibration
+                setSound(null, null)       // No sound
+                setBypassDnd(false)        // Don't bypass Do Not Disturb
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            }
+
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
+            Log.d(TAG, "Silent notification channel created")
         }
     }
 
