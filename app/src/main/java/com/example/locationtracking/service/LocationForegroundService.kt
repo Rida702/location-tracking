@@ -56,7 +56,7 @@ class LocationForegroundService : Service() {
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 "Location Service",
-                NotificationManager.IMPORTANCE_LOW
+                NotificationManager.IMPORTANCE_DEFAULT
             )
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
@@ -71,4 +71,19 @@ class LocationForegroundService : Service() {
             .setOngoing(true)
             .build()
     }
+}
+
+class TestForegroundService : Service() {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val notification = NotificationCompat.Builder(this, "test_channel")
+            .setContentTitle("Test Service")
+            .setContentText("Service is running")
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .build()
+
+        startForeground(1, notification)
+        return START_STICKY
+    }
+
+    override fun onBind(intent: Intent?): IBinder? = null
 }
